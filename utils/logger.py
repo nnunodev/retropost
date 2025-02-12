@@ -1,13 +1,14 @@
 import logging
+from config import LOGGING_CONFIG
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 # Create handlers
 c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler('file.log')
-c_handler.setLevel(logging.INFO)
-f_handler.setLevel(logging.ERROR)
+f_handler = logging.FileHandler(LOGGING_CONFIG['log_file'])
+c_handler.setLevel(LOGGING_CONFIG['console_level'])
+f_handler.setLevel(LOGGING_CONFIG['file_level'])
 
 # Create formatters and add them to handlers
 c_format = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
