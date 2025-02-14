@@ -6,8 +6,18 @@ from bs4 import BeautifulSoup
 from config import SCRAPING_CONFIG
 from utils.exceptions import ScrapingError
 from utils.logger import logger
+from typing import List, Dict
+from pathlib import Path
 
-def scrape_retrodo_news():
+def scrape_retrodo_news() -> List[Dict[str, str]]:
+    """Scrape news from RetroRodo website.
+    
+    Returns:
+        List of news items with title, summary, link, and date
+    Raises:
+        ScrapingError: If scraping fails
+        RequestException: If network request fails
+    """
     try:
         response = requests.get(SCRAPING_CONFIG['base_url'])
         response.raise_for_status()
@@ -56,6 +66,9 @@ def scrape_retrodo_news():
             os.makedirs(SCRAPING_CONFIG['data_directory'])
         with open(f"{SCRAPING_CONFIG['data_directory']}/retrodo_news.json", 'w') as f:
             json.dump(news_data, f, indent=4)
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Network request failed: {e}")
+        raise ScrapingError(f"Network error: {str(e)}")
     except Exception as e:
-        logger.error(f"Failed to scrape news: {e}")
-        raise ScrapingError(f"Failed to scrape news: {e}")
+        logger.error(f"Scraping failed: {e}")
+        raise ScrapingError(str(e))
